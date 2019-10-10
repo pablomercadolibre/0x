@@ -9,7 +9,8 @@ const through = require('through2')
 const debug = require('debug')('0x')
 const v8LogToTicks = require('../lib/v8-log-to-ticks')
 const { promisify } = require('util')
-const rename = promisify(fs.rename)
+const copy = promisify(fs.copy)
+const unlink = promisify(fs.unlink)
 const sleep = promisify(setTimeout)
 
 const {
@@ -129,7 +130,10 @@ v8.getIsolateLog = function (workingDir, pid) {
 
 async function renameSafe (from, to, tries = 0) {
   try {
-    await rename(from, to)
+    // in our context rename does not work, we can't rename from one partition to another,
+    // doing so will throw exdev cross-device link not permitted
+    await copy(from, to)
+    await unlink(from)
   } catch (e) {
     if (tries > 5) {
       throw e
