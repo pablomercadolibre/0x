@@ -9,7 +9,7 @@ const through = require('through2')
 const debug = require('debug')('0x')
 const v8LogToTicks = require('../lib/v8-log-to-ticks')
 const { promisify } = require('util')
-const copy = promisify(fs.copy)
+const copy = promisify(fs.copyFile)
 const unlink = promisify(fs.unlink)
 const sleep = promisify(setTimeout)
 
